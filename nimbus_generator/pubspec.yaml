@@ -1,0 +1,19 @@
+name: nimbus_generator
+description: A new flutter package project.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.1 <4.0.0'
+
+dependencies:
+  analyzer: ^6.2.0
+  build: ^2.4.1
+  build_config: ^1.1.1
+  code_builder: ^4.6.0
+  dart_style: ^2.3.3
+  source_gen: ^1.4.0
+  nimbus_annotation:
+    path: ../nimbus_annotation/
+  
+dev_dependencies:
+  test: ^1.6.0
