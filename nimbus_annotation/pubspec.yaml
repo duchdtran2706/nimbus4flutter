@@ -1,9 +1,0 @@
-name: nimbus_annotation
-description: Keep track of all your TODOs.
-version: 1.0.0+1
-
-environment:
-  sdk: '>=3.0.1 <4.0.0'
-
-dev_dependencies:
-  test: ^1.0.0
