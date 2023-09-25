@@ -10,7 +10,7 @@ dependencies:
   build: ^2.4.1
   build_config: ^1.1.1
   code_builder: ^4.6.0
-  dart_style: ^2.3.3
+  dart_style: ^2.3.3 
   source_gen: ^1.4.0
   nimbus4flutter:
     path: ../

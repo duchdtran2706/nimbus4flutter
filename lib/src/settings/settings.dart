@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:nimbus4flutter/nimbus4flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../nimbus4flutter.dart';
 
 Future<T?> loadSetting<T>(String name, T setting) async{
   final SharedPreferences prefs = await SharedPreferences.getInstance();
