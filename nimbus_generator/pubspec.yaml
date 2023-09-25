@@ -12,8 +12,8 @@ dependencies:
   code_builder: ^4.6.0
   dart_style: ^2.3.3 
   source_gen: ^1.4.0
-  nimbus4flutter:
-    path: ../
+  nimbus_annotation:
+    path: ../nimbus_annotation/
   
 dev_dependencies:
   test: ^1.6.0

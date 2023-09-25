@@ -6,14 +6,13 @@ import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:build/build.dart';
 import 'package:source_gen/source_gen.dart';
-import 'package:nimbus4flutter/nimbus4flutter.dart' as nimbus;
-
+import 'package:nimbus_annotation/nimbus_annotation.dart'
+    show NimbusApi, GET, POST, DELETE, PUT, PATCH, HEAD, OPTIONS;
 
 const _analyzerIgnores =
     '// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers';
 
-class NimbusSupporterGenerator
-    extends GeneratorForAnnotation<nimbus.NimbusApi> {
+class NimbusSupporterGenerator extends GeneratorForAnnotation<NimbusApi> {
   static const String _baseUrlVar = 'baseUrl';
   static const String _requestBuilderType = 'ApiServerHttpRequestBuilder';
   static const String _requestBuilder = 'requestBuilder';
@@ -60,7 +59,7 @@ class NimbusSupporterGenerator
           ),
         )
         ..methods.addAll(_parseMethods(element));
-      
+
       if (annotClassConsts.isEmpty) {
         c.constructors
             .add(_generateConstructor(_baseUrlVar, methods: element.methods));
@@ -127,7 +126,7 @@ ApiRegistory.registApiServer(
         ),
       );
       methods?.forEach((m) {
-            final wrappedReturnType = _getResponseType(m.returnType);
+        final wrappedReturnType = _getResponseType(m.returnType);
 
         final requestType =
             _displayString(m.parameters[0].type, withNullability: true);
@@ -157,14 +156,14 @@ ApiRegistory.registApiServer(
   }
 
   final _methodsAnnotations = const [
-    nimbus.GET,
-    nimbus.POST,
-    nimbus.DELETE,
-    nimbus.PUT,
-    nimbus.PATCH,
-    nimbus.HEAD,
-    nimbus.OPTIONS,
-    nimbus.Method,
+    GET,
+    POST,
+    DELETE,
+    PUT,
+    PATCH,
+    HEAD,
+    OPTIONS,
+    Method,
   ];
 
   TypeChecker _typeChecker(Type type) => TypeChecker.fromRuntime(type);
@@ -208,7 +207,7 @@ ApiRegistory.registApiServer(
     }
   }
 
-    DartType? _genericOf(DartType type) =>
+  DartType? _genericOf(DartType type) =>
       type is InterfaceType && type.typeArguments.isNotEmpty
           ? type.typeArguments.first
           : null;

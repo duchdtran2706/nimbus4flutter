@@ -112,8 +112,8 @@ class ApiRegistory{
   static final Map<String,Api> apiRegistory = new Map();
 
   /// Register [ApiServer].
-  static registApiServer(ApiServer server){
-    apiServerRegistory[server.name] = server;
+  static registApiServer(ApiServer server, {String? name}){
+    apiServerRegistory[name ?? server.name] = server;
   }
   
   /// Get [ApiServer] with the specified name
@@ -122,8 +122,8 @@ class ApiRegistory{
   }
   
   /// Register [Api].
-  static registApi(Api api){
-    apiRegistory[api.name] = api;
+  static registApi(Api api, {String? name}){
+    apiRegistory[name ?? api.name] = api;
   }
   
   /// Get [Api] with the specified name
