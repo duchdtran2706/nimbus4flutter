@@ -30,41 +30,41 @@ class _ApiService implements ApiService {
     );
 
     ApiRegistory.registApi(
-      ApiHttp<ApiRequestModel, ApiResponseModel, Request, Response>(
+      ApiHttp<Map<String, dynamic>, Map<String, dynamic>, Request, Response>(
         name: 'login',
         serverName: _kServerName,
         method: HttpMethod.POST,
         path: '/web/login.bf',
-        inputCreator: (_) => ApiRequestModel(),
-        outputCreator: (_) => ApiResponseModel(),
+        inputCreator: (_) => {},
+        outputCreator: (_) => {},
       ),
     );
 
     ApiRegistory.registApi(
-      ApiHttp<ApiRequestModel, ApiResponseModel, Request, Response>(
+      ApiHttp<Map<String, dynamic>, Map<String, dynamic>, Request, Response>(
         name: 'logout',
         serverName: _kServerName,
         method: HttpMethod.POST,
         path: '/web/logout.bf',
-        inputCreator: (_) => ApiRequestModel(),
-        outputCreator: (_) => ApiResponseModel(),
+        inputCreator: (_) => {},
+        outputCreator: (_) => {},
       ),
     );
   }
 
   @override
-  Future<ApiResponseModel> login(ApiRequestModel request) async {
+  Future<LoginResponseModel> login(LoginRequestModel request) async {
     final api = ApiRegistory.getApi('login');
     final context = RequestContext();
-    final response = await api?.request(request, context);
-    return response;
+    final response = await api?.request(request.toJson(), context);
+    return LoginResponseModel.fromJson(response);
   }
 
   @override
   Future<ApiResponseModel> logout(ApiRequestModel request) async {
     final api = ApiRegistory.getApi('logout');
     final context = RequestContext();
-    final response = await api?.request(request, context);
-    return response;
+    final response = await api?.request(request.toJson(), context);
+    return ApiResponseModel.fromJson(response);
   }
 }

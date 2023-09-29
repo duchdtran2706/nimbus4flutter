@@ -139,13 +139,13 @@ ApiRegistory.registApiServer(
 
         blocks.add(Code('''
  ApiRegistory.registApi(
-      ApiHttp<$requestType, $responseType, Request, Response>(
+      ApiHttp<Map<String, dynamic>, Map<String, dynamic>, Request, Response>(
         name: '${m.name}',
         serverName: _kServerName,
         method: HttpMethod.$httpMethod,
         path: $path,
-        inputCreator: (_) => $requestType(),
-        outputCreator: (_) => $responseType(),
+        inputCreator: (_) => {},
+        outputCreator: (_) => {},
       ),
     );
 '''));
@@ -267,6 +267,9 @@ ApiRegistory.registApiServer(
   }
 
   Code _generateRequest(MethodElement m, ConstantReader httpMethod) {
+    final returnType = _displayString(_getResponseType(m.type.returnType),
+        withNullability: true);
+
     final blocks = <Code>[];
     blocks.add(declareFinal('api')
         .assign(CodeExpression(Code("ApiRegistory.getApi('${m.name}')")))
@@ -275,9 +278,10 @@ ApiRegistory.registApiServer(
         .assign(CodeExpression(Code("RequestContext()")))
         .statement);
     blocks.add(declareFinal('response')
-        .assign(CodeExpression(Code("await api?.request(request, context)")))
+        .assign(CodeExpression(
+            Code("await api?.request(request.toJson(), context)")))
         .statement);
-    blocks.add(Code('return response;'));
+    blocks.add(Code('return $returnType.fromJson(response);'));
     return Block.of(blocks);
   }
 }

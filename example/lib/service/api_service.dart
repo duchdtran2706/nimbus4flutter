@@ -1,6 +1,7 @@
-
-import 'package:example/model/request.dart';
-import 'package:example/model/response.dart';
+import 'package:example/model/request/api_request_model.dart';
+import 'package:example/model/request/login_request_model.dart';
+import 'package:example/model/response/api_response_model.dart';
+import 'package:example/model/response/login_response_model.dart';
 import 'package:http/http.dart';
 import 'package:nimbus4flutter/nimbus4flutter.dart';
 import 'package:nimbus_annotation/nimbus_annotation.dart';
@@ -16,7 +17,7 @@ abstract class ApiService {
   }) = _ApiService;
 
   @POST('/web/login.bf')
-  Future<ApiResponseModel> login(ApiRequestModel request);
+  Future<LoginResponseModel> login(LoginRequestModel request);
 
   @POST('/web/logout.bf')
   Future<ApiResponseModel> logout(ApiRequestModel request);
