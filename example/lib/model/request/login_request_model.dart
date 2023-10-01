@@ -7,33 +7,36 @@ part 'login_request_model.g.dart';
 
 @DatasetSerializable()
 class LoginRequestModel extends ApiRequestModel {
-  @DatasetHeader()
-  final LoginRecord? login;
-
-  LoginRequestModel(
-    super.common,
-    super.headerQuery,
-    super.recordListQuery,
-    super.nestedRecordQuery,
-    super.nestedRecordListQuery,
-    this.login,
-  );
+  LoginRequestModel({this.login});
 
   factory LoginRequestModel.fromJson(Map<String, dynamic> json) =>
       _$LoginRequestModelFromJson(json);
+  @DatasetHeader()
+  final LoginRequestRecord? login;
 
+  @override
+  List<HeaderQueryRecord>? get headerQuery => [
+        HeaderQueryRecord(name: 'Common'),
+        HeaderQueryRecord(
+          name: 'Login',
+          propertyNames: ['user_id', 'session_id'],
+        ),
+      ];
+
+  @override
   Map<String, dynamic> toJson() => _$LoginRequestModelToJson(this);
 }
 
 @RecordSerializable()
-class LoginRecord {
+class LoginRequestRecord {
+  LoginRequestRecord({this.mailAddress, this.password});
+
+  factory LoginRequestRecord.fromJson(Map<String, dynamic> json) =>
+      _$LoginRequestRecordFromJson(json);
   final String? mailAddress;
   final String? password;
 
-  LoginRecord(this.mailAddress, this.password);
+  static RecordSchema? get schema => _$LoginRequestRecordSchema();
 
-  factory LoginRecord.fromJson(Map<String, dynamic> json) =>
-      _$LoginRecordFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LoginRecordToJson(this);
+  Map<String, dynamic> toJson() => _$LoginRequestRecordToJson(this);
 }

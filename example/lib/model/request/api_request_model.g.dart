@@ -11,7 +11,7 @@ class _HeaderQueryRecord extends Record {
       : super(
           RecordSchema([
             FieldSchema('name'),
-            FieldSchema('property_names'),
+            FieldSchema('propertyNames'),
           ]),
         );
 }
@@ -20,15 +20,19 @@ HeaderQueryRecord _$HeaderQueryRecordFromJson(Map<String, dynamic> json) {
   final ds = _HeaderQueryRecord();
   ds.fromMap(json);
   return HeaderQueryRecord(
-    json['name'],
-    json['property_names'],
+    name: json['name'],
+    propertyNames: json['propertyNames'],
   );
+}
+
+RecordSchema? _$HeaderQueryRecordSchema() {
+  return _HeaderQueryRecord().schema;
 }
 
 Map<String, dynamic> _$HeaderQueryRecordToJson(HeaderQueryRecord instance) {
   final ds = _HeaderQueryRecord();
   ds.setByName('name', instance.name);
-  ds.setByName('property_names', instance.propertyNames?.map((e) => e));
+  ds.setByName('propertyNames', instance.propertyNames);
   return ds.toMap();
 }
 
@@ -51,17 +55,24 @@ CommonRequestRecord _$CommonRequestRecordFromJson(Map<String, dynamic> json) {
   final ds = _CommonRequestRecord();
   ds.fromMap(json);
   return CommonRequestRecord(
-    OsRecord.fromJson(json['os']),
-    ApplicationRecord.fromJson(json['application']),
-    json['user_id'],
-    json['session_id'],
+    os: OsRecord.fromJson(json['os']),
+    application: ApplicationRecord.fromJson(json['application']),
+    userId: json['user_id'],
+    sessionId: json['session_id'],
   );
+}
+
+RecordSchema? _$CommonRequestRecordSchema() {
+  return _CommonRequestRecord().schema;
 }
 
 Map<String, dynamic> _$CommonRequestRecordToJson(CommonRequestRecord instance) {
   final ds = _CommonRequestRecord();
-  ds.setByName('os', instance.os?.toJson());
-  ds.setByName('application', instance.application?.toJson());
+  final osRecord = _OsRecord().fromMap(instance.os?.toJson() ?? {});
+  ds.setByName('os', osRecord);
+  final applicationRecord =
+      _ApplicationRecord().fromMap(instance.application?.toJson() ?? {});
+  ds.setByName('application', applicationRecord);
   ds.setByName('user_id', instance.userId);
   ds.setByName('session_id', instance.sessionId);
   return ds.toMap();
@@ -81,9 +92,13 @@ OsRecord _$OsRecordFromJson(Map<String, dynamic> json) {
   final ds = _OsRecord();
   ds.fromMap(json);
   return OsRecord(
-    json['os_id'],
-    json['os_version'],
+    osId: json['os_id'],
+    osVersion: json['os_version'],
   );
+}
+
+RecordSchema? _$OsRecordSchema() {
+  return _OsRecord().schema;
 }
 
 Map<String, dynamic> _$OsRecordToJson(OsRecord instance) {
@@ -107,9 +122,13 @@ ApplicationRecord _$ApplicationRecordFromJson(Map<String, dynamic> json) {
   final ds = _ApplicationRecord();
   ds.fromMap(json);
   return ApplicationRecord(
-    json['application_id'],
-    json['application_version'],
+    applicationId: json['application_id'],
+    applicationVersion: json['application_version'],
   );
+}
+
+RecordSchema? _$ApplicationRecordSchema() {
+  return _ApplicationRecord().schema;
 }
 
 Map<String, dynamic> _$ApplicationRecordToJson(ApplicationRecord instance) {
@@ -137,17 +156,23 @@ ApiRequestModel _$ApiRequestModelFromJson(Map<String, dynamic> json) {
   final ds = _DataSet();
   ds.fromList(json);
   return ApiRequestModel(
-    CommonRequestRecord.fromJson(
+    common: CommonRequestRecord.fromJson(
       ds.getHeader('Common')?.toMap() ?? {},
     ),
-    ds
+    headerQuery: ds
         .getRecordList('HeaderQuery')
         ?.toMap()
         .map((e) => HeaderQueryRecord.fromJson(e))
         .toList(),
-    ds.getRecordList('RecordListQuery')?.toMap().map((e) => e).toList(),
-    ds.getRecordList('NestedRecordQuery')?.toMap().map((e) => e).toList(),
-    ds.getRecordList('NestedRecordListQuery')?.toMap().map((e) => e).toList(),
+    recordListQuery:
+        ds.getRecordList('RecordListQuery')?.toMap().map((e) => e).toList(),
+    nestedRecordQuery:
+        ds.getRecordList('NestedRecordQuery')?.toMap().map((e) => e).toList(),
+    nestedRecordListQuery: ds
+        .getRecordList('NestedRecordListQuery')
+        ?.toMap()
+        .map((e) => e)
+        .toList(),
   );
 }
 

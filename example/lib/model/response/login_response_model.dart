@@ -1,8 +1,6 @@
 import 'package:nimbus4flutter/nimbus4flutter.dart';
 import 'package:nimbus_annotation/nimbus_annotation.dart';
 
-import 'api_response_model.dart';
-
 part 'login_response_model.g.dart';
 
 /// "schema": {
@@ -18,8 +16,8 @@ part 'login_response_model.g.dart';
 //      }
 //  },
 @DatasetSerializable(name: 'ResponseDataSet')
-class LoginResponseModel extends ApiResponseModel {
-  LoginResponseModel(super.common, this.login);
+class LoginResponseModel {
+  LoginResponseModel({this.login});
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseModelFromJson(json);
@@ -27,17 +25,19 @@ class LoginResponseModel extends ApiResponseModel {
   Map<String, dynamic> toJson() => _$LoginResponseModelToJson(this);
 
   @DatasetHeader()
-  final LoginRecord? login;
+  final LoginResponseRecord? login;
 }
 
 @RecordSerializable()
-class LoginRecord {
-  LoginRecord(this.userId, this.sessionId);
+class LoginResponseRecord {
+  LoginResponseRecord({this.userId, this.sessionId});
 
-  factory LoginRecord.fromJson(Map<String, dynamic> json) =>
-      _$LoginRecordFromJson(json);
+  factory LoginResponseRecord.fromJson(Map<String, dynamic> json) =>
+      _$LoginResponseRecordFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LoginRecordToJson(this);
+  static RecordSchema? get schema => _$LoginResponseRecordSchema();
+
+  Map<String, dynamic> toJson() => _$LoginResponseRecordToJson(this);
 
   final String? userId;
   final String? sessionId;

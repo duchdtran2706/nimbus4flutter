@@ -20,9 +20,13 @@ CommonRecord _$CommonRecordFromJson(Map<String, dynamic> json) {
   final ds = _CommonRecord();
   ds.fromMap(json);
   return CommonRecord(
-    json['result_code'],
-    json['result_message'],
+    resultCode: json['result_code'],
+    resultMessage: json['result_message'],
   );
+}
+
+RecordSchema? _$CommonRecordSchema() {
+  return _CommonRecord().schema;
 }
 
 Map<String, dynamic> _$CommonRecordToJson(CommonRecord instance) {
@@ -46,7 +50,7 @@ ApiResponseModel _$ApiResponseModelFromJson(Map<String, dynamic> json) {
   final ds = _DataSet();
   ds.fromList(json);
   return ApiResponseModel(
-    CommonRecord.fromJson(
+    common: CommonRecord.fromJson(
       ds.getHeader('Common')?.toMap() ?? {},
     ),
   );

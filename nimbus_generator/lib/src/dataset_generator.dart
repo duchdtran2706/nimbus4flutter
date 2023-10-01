@@ -1,11 +1,11 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:code_builder/code_builder.dart';
+import 'annotation_helper.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:nimbus_annotation/nimbus_annotation.dart'
     show DatasetSerializable;
 import 'package:nimbus_generator/src/dart_type_helper.dart';
-import 'package:nimbus_generator/src/field_helpers.dart';
 import 'package:recase/recase.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:source_helper/source_helper.dart';
@@ -25,25 +25,24 @@ class DatasetSupporterGenerator
 
     final emitter = DartEmitter(useNullSafetySyntax: true);
 
-    final sortedFields = createSortedFieldSet(element);
+    final fieldsFomatted = element.fields.where((e) => !e.isStatic);
 
     return DartFormatter().format([
       _implementDataset(element, annotation).accept(emitter),
-      _implementFromJsonFunc(className, fields: sortedFields).accept(emitter),
-      _implementToJsonFunc(className, fields: sortedFields).accept(emitter),
+      _implementFromJsonFunc(className, fields: fieldsFomatted).accept(emitter),
+      _implementToJsonFunc(className, fields: fieldsFomatted).accept(emitter),
     ].join('\n\n'));
   }
 
   Class _implementDataset(ClassElement element, ConstantReader? annotation) {
     return Class((c) {
-      final datasetName = annotation?.peek('name')?.stringValue;
+      final datasetName = annotation?.toDataSet().name;
 
       c
         ..name = '_DataSet'
         ..extend = refer('DataSet')
         ..constructors.add(
-          _generateConstructor(datasetName,
-              fields: createSortedFieldSet(element)),
+          _generateConstructor(datasetName, fields: element.fields),
         );
     });
   }
@@ -55,6 +54,9 @@ class DatasetSupporterGenerator
 
     final recordLists = fields?.where((e) => e.metadata
         .any((meta) => meta.element?.displayName == 'DatasetRecordList'));
+
+    final inheritedFields =
+        fields?.where((e) => e.getter?.hasOverride ?? false);
 
     return Constructor((c) {
       var superConstName = 'super';
@@ -79,6 +81,14 @@ class DatasetSupporterGenerator
         }
       });
 
+      inheritedFields?.forEach((element) {
+        final type = element.getter?.returnType
+            .coreIterableGenericType()
+            .getDisplayString(withNullability: false);
+        final name = element.getter?.displayName.pascalCase;
+        blocks.add(Code("setRecordListSchema($type.schema!, '$name');"));
+      });
+
       c.body = Block.of(blocks);
     });
   }
@@ -89,17 +99,18 @@ class DatasetSupporterGenerator
     blocks.add(declareFinal('ds').assign(refer('_DataSet').call([])).statement);
     blocks.add(Code('ds.fromList(json);'));
 
-    final fromJsonField = fields?.map((e) {
+    final fromJsonField =
+        fields?.where((e) => !(e.getter?.hasOverride ?? false)).map((e) {
       final type = e.type.getDisplayString(withNullability: false);
       final name = e.displayName.pascalCase;
       if (e.type.isIterable()) {
         if (e.type.coreIterableGenericType().isLikeDynamic) {
-          return "ds.getRecordList('$name')?.toMap().map((e) => e).toList()";
+          return "${e.displayName}: ds.getRecordList('$name')?.toMap().map((e) => e).toList()";
         } else {
-          return "ds.getRecordList('$name')?.toMap().map((e) => ${name}Record.fromJson(e)).toList()";
+          return "${e.displayName}: ds.getRecordList('$name')?.toMap().map((e) => ${name}Record.fromJson(e)).toList()";
         }
       } else {
-        return "$type.fromJson(ds.getHeader('$name')?.toMap() ?? {},)";
+        return "${e.displayName}: $type.fromJson(ds.getHeader('$name')?.toMap() ?? {},)";
       }
     });
     blocks.add(Code('return $className(${fromJsonField?.join(',')},);'));
@@ -127,6 +138,7 @@ class DatasetSupporterGenerator
 
       final name = element.displayName.pascalCase;
       final fieldRecordName = '${element.displayName}Record';
+      final isInheritedField = element.getter?.hasOverride ?? false;
       if (isHeader) {
         final type = element.type.getDisplayString(withNullability: false);
 
@@ -148,6 +160,15 @@ class DatasetSupporterGenerator
               "$fieldRecordName.fromMap(instance.headerQuery?.map((e) => e.toJson()).toList());"));
           blocks.add(Code(" ds.setRecordList($fieldRecordName, '$name');"));
         }
+      } else if (isInheritedField) {
+              final type = element.type.coreIterableGenericType().getDisplayString(withNullability: false);
+      final name = element.displayName;
+        blocks.add(Code('ds.setRecordList('));
+        blocks.add(Code(
+            'RecordList($type.schema!).fromMap(instance.$name?.map((e) => e.toJson()).toList()),'));
+        blocks.add(Code("'${name.pascalCase}',"));
+
+        blocks.add(Code(');'));
       }
     });
 
